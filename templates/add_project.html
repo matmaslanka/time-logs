@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Add project</h1>
+<form action="/project/create" method="POST">
+  <div>
+    <label for="project_number">Project number</label>
+    <input type="text" name="project_number"/>
+  </div>
+  <div>
+    <label for="project_name">Name of project</label>
+    <input type="text" name="project_name"/>
+  </div>
+  <div>
+    <label for="project_description">Project description</label>
+    <textarea name="project_description"></textarea>
+  </div>
+  <div>
+    <label for="start_date">Starting date</label>
+    <input type="date" name="start_date"/>
+  </div>
+  <div>
+    <label for="end_date">Ending date</label>
+    <input type="date" name="end_date"/>
+  </div>
+  <div>
+    <input type="submit" value="Send">
+  </div>
+</form>
+
+
+{% endblock %}

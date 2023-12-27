@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ project['project_number'] }} {{ project['project_name'] }}</h1>
+    <p>Project description: {{ project['project_description'] }}</p>
+    <p>Starting date: {{ project['start_date']}} </p>
+    <p>Ending date: {{ project['end_date']}} </p>
+{% endblock %}

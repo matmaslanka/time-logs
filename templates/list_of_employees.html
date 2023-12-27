@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>List of employees</h1>
+<ul>
+    {% for employee_id, employee in employees.items() %}
+    <li><a href="{{ url_for('employee', employee_id=employee_id)}}">{{ employee['name'] }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

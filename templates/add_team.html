@@ -1,0 +1,18 @@
+{% extends 'base.html'%}
+
+{% block content %}
+<h1>Add team</h1>
+<form action="team/create" method="POST">
+    <div>
+        <label for="team_name">Team name:</label>
+        <input type="text" name="team_name" />
+    </div>
+    <div>
+        <label for="team_leader">Team leader:</label>
+        <input type="text" name="team_leader" />
+    </div>
+    <div>
+        <input type="submit" value="Send">
+    </div>
+</form>
+{% endblock %}

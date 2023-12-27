@@ -1,0 +1,24 @@
+{% extends 'base.html'%}
+
+{% block content %}
+<h1>Add hours:</h1>
+
+<form action="{{ url_for('add_hours_to_employee', employee_id=employee_id) }}" method="POST">
+<div>
+    <label for="project_no">Project number:</label>
+    <select name="project_no" id="project_no">
+        {% for project_id, project in projects.items() %}
+        <option value="{{ project['project_number'] }} - {{ project['project_name'] }}">
+            {{ project['project_number'] }} - {{ project['project_name'] }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div>
+    <label for="time">Number of hours:</label>
+    <input type="text" name="time"/>
+</div>
+<div>
+    <input type="submit" value="Add"/>
+</div>
+</form>
+{% endblock %}

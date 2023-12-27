@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>List of project</h1>
+<ul>
+    {% for project_id, project in projects.items() %}
+    <li><a href="{{ url_for('project', project_id=project_id)}}">{{ project['project_name'] }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
