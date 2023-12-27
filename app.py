@@ -27,7 +27,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/add_hours')
+@app.route('/hours')
 def add_hours():
     if len(employees) == 0:
         return render_template('no_employee_hours.html')
@@ -35,12 +35,12 @@ def add_hours():
         return render_template('list_of_employees_hours.html', employees=employees)
 
 
-@app.route('/check_hours')
-def check_hours():
-    return 'check_hours'
+# @app.route('/check_hours')
+# def check_hours():
+#     return 'check_hours'
 
 
-@app.route('/list_of_employees')
+@app.route('/employees')
 def list_of_employees():
     if len(employees) == 0:
         return render_template('no_employee.html')
@@ -48,7 +48,7 @@ def list_of_employees():
         return render_template('list_of_employees.html', employees=employees)
 
 
-@app.route('/list_of_projects')
+@app.route('/projects')
 def list_of_projects():
     if len(projects) == 0:
         return render_template('no_project.html')
@@ -56,7 +56,7 @@ def list_of_projects():
         return render_template('list_of_projects.html', projects=projects)
 
 
-@app.route('/list_of_teams')
+@app.route('/teams')
 def list_of_teams():
     if len(teams) == 0:
         return render_template('no_team.html')
@@ -65,24 +65,24 @@ def list_of_teams():
 
 
 
-@app.route('/add_employee')
-def add_employee():
-    return render_template('add_employee.html', teams=teams)
+# @app.route('/add_employee')
+# def add_employee():
+#     return render_template('add_employee.html', teams=teams)
 
 
-@app.route('/add_project')
-def add_project():
-    return render_template('add_project.html')
+# @app.route('/add_project')
+# def add_project():
+#     return render_template('add_project.html')
 
 
-@app.route('/add_team')
-def add_team():
-    return render_template('add_team.html')
+# @app.route('/add_team')
+# def add_team():
+#     return render_template('add_team.html')
 
 
-@app.route('/arch')
-def arch():
-    return 'arch'
+# @app.route('/arch')
+# def arch():
+#     return 'arch'
 
 
 @app.route('/employees/<int:employee_id>')
@@ -113,7 +113,7 @@ def team(team_id):
 
     return render_template('team.html', team=team)
 
-@app.route("/add_hours/<int:employee_id>", methods=['GET', 'POST'])
+@app.route("/hours/<int:employee_id>", methods=['GET', 'POST'])
 def add_hours_create(employee_id):
     employee = employees.get(employee_id)
     if not employee:
@@ -121,7 +121,7 @@ def add_hours_create(employee_id):
     return render_template('add_hours.html', projects=projects, employee_id=employee_id)
 
 
-@app.route("/add_hours/create/<int:employee_id>", methods=['GET', 'POST'])
+@app.route("/hours/create/<int:employee_id>", methods=['GET', 'POST'])
 def add_hours_to_employee(employee_id):
     employee = employees.get(employee_id)
     if request.method == 'POST':
@@ -139,7 +139,7 @@ def add_hours_to_employee(employee_id):
     return render_template('add_employee.html')
 
 
-@app.route("/employee/create", methods=['GET', 'POST'])
+@app.route("/employees/create", methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -149,10 +149,10 @@ def create():
 
         return redirect(url_for('employee', employee_id=employee_id))
         #przekierowuje nas na tę stronę którą stworzyliśmy
-    return render_template('add_employee.html')
+    return render_template('add_employee.html', teams=teams)
 
 
-@app.route("/project/create", methods=['GET', 'POST'])
+@app.route("/projects/create", methods=['GET', 'POST'])
 def project_create():
     if request.method == 'POST':
         project_number = request.form.get('project_number')
@@ -171,7 +171,7 @@ def project_create():
     return render_template('add_project.html')
 
 
-@app.route('/team/create', methods=['GET', 'POST'])
+@app.route('/teams/create', methods=['GET', 'POST'])
 def team_create():
     if request.method == 'POST':
         team_name = request.form.get('team_name')
