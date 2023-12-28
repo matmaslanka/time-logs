@@ -9,8 +9,15 @@
 {# Tutaj muszę zrobić pętle, żeby mi listowało liczbę godzin do danej osoby #}
 
 <p>Projects time:</p>
-<ul> {% for projects_id, project in employee['projects_emp'].items() %}
-    <li>project: {{ project['project_name'] }} time: {{project['project_time']}}</li>
+<ul>
+    {% for projects_id, project in employee['projects_emp'].items() %}
+    <li>
+        <form method="post" action="{{ url_for('hours_delete', employee_id=employee_id )}}">
+            <input type="hidden" name="projects_id" value="{{ projects_id }}">
+            project: {{ project['project_name'] }} time: {{project['project_time']}}
+                    <button type="submit">Delete</button>
+        </form>
+    </li>
     {% endfor %}
 </ul>
 
