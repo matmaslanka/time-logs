@@ -90,10 +90,10 @@ def employee(employee_id):
     employee = employees.get(employee_id)
     if not employee:
         return render_template('404.html', message=f'A employee with id {id} was not found.')
-    if 'projects_emp' not in employees[employee_id].keys():
+    if 'projects_emp' not in employees[employee_id].keys() or len(employee['projects_emp']) == 0:
         return render_template('employee_without_hours.html', employee=employee)
     else:
-        return render_template('employee.html', employee=employee)
+        return render_template('employee.html', employee=employee, employee_id=employee_id)
 
 
 @app.route('/projects/<int:project_id>')
@@ -138,6 +138,47 @@ def add_hours_to_employee(employee_id):
         return redirect(url_for('employee', employee_id=employee_id))
     return render_template('add_employee.html')
 
+
+@app.route('/employees/delete/<int:employee_id>', methods=['POST'])
+def employee_delete(employee_id):
+    employee = employees.get(employee_id)
+    if request.method == 'POST':
+        del employees[employee_id]
+        return redirect(url_for('list_of_employees'))
+    return render_template('list_of_employees', employee_id=employee_id)
+
+
+@app.route("/hours/delete/<int:employee_id>", methods=['POST'])
+def hours_delete(employee_id):
+    projects_id = request.form.get('projects_id')
+    employee = employees.get(employee_id, {})
+    project = employee.get('projects_emp', {}).get(int(projects_id))
+    if request.method == 'POST':
+        if project:
+            del employee['projects_emp'][int(projects_id)]
+            return redirect(url_for('employee', employee_id=employee_id))
+    if 'projects_emp' not in employee:
+        return render_template('employee_without_hours.html', employee=employee)
+    else:
+        return render_template('employee.html', employee=employee, employee_id=employee_id)
+
+
+@app.route('/projects/delete<int:project_id>', methods=['POST'])
+def project_delete(project_id):
+    project = projects.get(project_id)
+    if request.method == 'POST':
+        del projects[project_id]
+        return redirect(url_for('list_of_projects'))
+    return render_template('list_of_projects', project_id=project_id)
+
+
+@app.route('/teams/delete/<int:team_id>', methods=['POST'])
+def team_delete(team_id):
+    team = teams.get(team_id)
+    if request.method == 'POST':
+        del teams[team_id]
+        return redirect(url_for('list_of_teams'))
+    return render_template('list_of_teams', team_id=team_id)
 
 @app.route("/employees/create", methods=['GET', 'POST'])
 def create():

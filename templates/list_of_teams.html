@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <h1>List of teams</h1>
-<ul> {% for team_id, team in teams.items() %}
-  <li><a href="{{ url_for('team', team_id=team_id)}}"> {{ team['team_name'] }}</a></li>
+<ul>
+    {% for team_id, team in teams.items() %}
+    <li>
+        <form method="post" action="{{ url_for('team_delete', team_id=team_id) }}">
+            <a href="{{ url_for('team', team_id=team_id)}}"> {{ team['team_name'] }}</a>
+                    <button type="submit">Delete</button>
+      </form>
+    </li>
   {% endfor %}
 </ul>
 
