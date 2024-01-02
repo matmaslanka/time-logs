@@ -9,9 +9,10 @@
         <form method="post" action="{{ url_for('project_delete', project_id=project_id) }}">
             <a href="{{ url_for('project', project_id=project_id)}}">{{ project['project_name'] }}</a>
                     <button type="submit">Delete</button>
+                    <button type="submit" formaction="{{ url_for('project_update', project_id=project_id) }}">Update</button>
     </form>
     </li>
     {% endfor %}
 </ul>
-
+<p>Projects {{ projects }}</p>
 {% endblock %}

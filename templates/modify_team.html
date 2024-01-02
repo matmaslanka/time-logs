@@ -1,0 +1,18 @@
+{% extends 'base.html'%}
+
+{% block content %}
+<h1>Update team</h1>
+<form action="{{ url_for('team_modify', team_id=team_id) }}" method="POST">
+    <div>
+        <label for="team_name">Team name:</label>
+        <input type="text" name="team_name" value="{{ team['team_name'] }}"/>
+    </div>
+    <div>
+        <label for="team_leader">Team leader:</label>
+        <input type="text" name="team_leader" value="{{ team['team_leader'] }}"/>
+    </div>
+    <div>
+        <input type="submit" value="Send">
+    </div>
+</form>
+{% endblock %}

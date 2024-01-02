@@ -11,16 +11,17 @@ employees = {}
 projects = {
     0:
         {'project_number': 'R100', 'project_name': 'Rowerki', 'project_description': 'Rowerki do jeżdżenia',
-         'start_date': '12.12.2023', 'end_date': '14.12.2024'},
+         'start_date': '2023-12-30', 'end_date': '2024-12-30'},
     1:
         {'project_number': 'R101', 'project_name': 'Kółeczka', 'project_description': 'Kółka na półkę',
-        'start_date': '13.01.2024', 'end_date': '30.12.2024'},
+            'start_date': '2024-01-12', 'end_date': '2024-06-12'},
     }
 
 teams = {
     0:
         {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass'}
 }
+
 
 @app.route('/')
 def home():
@@ -62,7 +63,6 @@ def list_of_teams():
         return render_template('no_team.html')
     else:
         return render_template('list_of_teams.html', teams=teams)
-
 
 
 # @app.route('/add_employee')
@@ -113,6 +113,7 @@ def team(team_id):
 
     return render_template('team.html', team=team)
 
+
 @app.route("/hours/<int:employee_id>", methods=['GET', 'POST'])
 def add_hours_create(employee_id):
     employee = employees.get(employee_id)
@@ -134,7 +135,7 @@ def add_hours_to_employee(employee_id):
         else:
             projects_id = len(employees[employee_id]['projects_emp'])
             employees[employee_id]['projects_emp'][projects_id] = {'project_name': project_name_hours,
-                                                              'project_time': project_time_hours}
+                                                                   'project_time': project_time_hours}
         return redirect(url_for('employee', employee_id=employee_id))
     return render_template('add_employee.html')
 
@@ -180,6 +181,7 @@ def team_delete(team_id):
         return redirect(url_for('list_of_teams'))
     return render_template('list_of_teams', team_id=team_id)
 
+
 @app.route("/employees/create", methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
@@ -189,7 +191,7 @@ def create():
         employees[employee_id] = {'employee_id': employee_id, 'name': name, 'team': team}
 
         return redirect(url_for('employee', employee_id=employee_id))
-        #przekierowuje nas na tę stronę którą stworzyliśmy
+        # przekierowuje nas na tę stronę którą stworzyliśmy
     return render_template('add_employee.html', teams=teams)
 
 
@@ -222,6 +224,76 @@ def team_create():
                           'team_leader': team_leader}
         return redirect(url_for('team', team_id=team_id))
     return render_template('add_team.html')
+
+
+@app.route("/employees/update/<int:employee_id>", methods=['GET', 'POST'])
+def employee_update(employee_id):
+    employee = employees.get(employee_id)
+    if request.method == 'POST':
+        return redirect(url_for('employee_modify', employee_id=employee_id))
+    return render_template('list_of_employees', employee_id=employee_id)
+
+
+@app.route("/employees/modify/<int:employee_id>", methods=['GET', 'POST'])
+def employee_modify(employee_id):
+    employee = employees.get(employee_id)
+    if request.method == 'POST':
+        name = request.form.get('name')
+        team = request.form.get('team')
+        employees[int(employee_id)] = {'employee_id': int(employee_id), 'name': name, 'team': team}
+
+        return redirect(url_for('employee', employee_id=employee_id))
+        # przekierowuje nas na tę stronę którą stworzyliśmy
+    return render_template('modify_employee.html', teams=teams, employee_id=employee_id, employee=employee)
+
+
+@app.route("/projects/update/<int:project_id>", methods=['GET', 'POST'])
+def project_update(project_id):
+    project = projects.get(project_id)
+    if request.method == 'POST':
+        return redirect(url_for('project_modify', project_id=project_id))
+    return render_template('list_of_projects', project_id=project_id)
+
+
+@app.route("/projects/modify/<int:project_id>", methods=['GET', 'POST'])
+def project_modify(project_id):
+    project = projects.get(project_id)
+    if request.method == 'POST':
+        project_number = request.form.get('project_number')
+        project_name = request.form.get('project_name')
+        project_description = request.form.get('project_description')
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        projects[int(project_id)] = {'project_number': project_number,
+                                     'project_name': project_name,
+                                     'project_description': project_description,
+                                     'start_date': start_date,
+                                     'end_date': end_date}
+
+        return redirect(url_for('project', project_id=project_id))
+        # przekierowuje nas na tę stronę którą stworzyliśmy
+    return render_template('modify_project.html', project_id=project_id, project=project)
+
+
+@app.route("/teams/update/<int:team_id>", methods=['GET', 'POST'])
+def team_update(team_id):
+    team = teams.get(team_id)
+    if request.method == 'POST':
+        return redirect(url_for('team_modify', team_id=team_id))
+    return render_template('list_of_teams', team_id=team_id)
+
+
+@app.route("/teams/modify/<int:team_id>", methods=['GET', 'POST'])
+def team_modify(team_id):
+    team = teams.get(team_id)
+    if request.method == 'POST':
+        team_name = request.form.get('team_name')
+        team_leader = request.form.get('team_leader')
+        teams[team_id] = {'team_name': team_name,
+                          'team_leader': team_leader}
+        return redirect(url_for('team', team_id=team_id))
+    return render_template('modify_team.html', team_id=team_id, team=team)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
