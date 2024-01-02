@@ -9,6 +9,7 @@
         <form method="post" action="{{ url_for('team_delete', team_id=team_id) }}">
             <a href="{{ url_for('team', team_id=team_id)}}"> {{ team['team_name'] }}</a>
                     <button type="submit">Delete</button>
+            <button type="submit" formaction="{{ url_for('team_update', team_id=team_id)}}">Update</button>
       </form>
     </li>
   {% endfor %}

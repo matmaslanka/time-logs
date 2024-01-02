@@ -9,6 +9,7 @@
         <form method="post" action="{{ url_for('employee_delete', employee_id=employee_id) }}">
             <a href="{{ url_for('employee', employee_id=employee_id)}}">{{ employee['name'] }}</a>
                     <button type="submit">Delete</button>
+                    <button type="submit" formaction="{{ url_for('employee_update', employee_id=employee_id) }}">Update</button>
         </form>
     </li>
 
