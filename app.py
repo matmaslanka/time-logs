@@ -176,7 +176,11 @@ def project_delete(project_id):
 @app.route('/teams/delete/<int:team_id>', methods=['POST'])
 def team_delete(team_id):
     team = teams.get(team_id)
+    team_name = teams.get(team_id).get('team_name')
     if request.method == 'POST':
+        for emp_id, emp_info in employees.items():
+            if emp_info['team'] == team_name:
+                return render_template('data_are_used.html', message=f'First remove employees from this team.')
         del teams[team_id]
         return redirect(url_for('list_of_teams'))
     return render_template('list_of_teams', team_id=team_id)
@@ -286,7 +290,13 @@ def team_update(team_id):
 @app.route("/teams/modify/<int:team_id>", methods=['GET', 'POST'])
 def team_modify(team_id):
     team = teams.get(team_id)
+    team_name = teams.get(team_id).get('team_name')
     if request.method == 'POST':
+        # for loop change team in employees which are in this team
+        for emp_id, emp_info in employees.items():
+            if emp_info['team'] == team_name:
+                team_name = request.form.get('team_name')
+                emp_info['team'] = team_name
         team_name = request.form.get('team_name')
         team_leader = request.form.get('team_leader')
         teams[team_id] = {'team_name': team_name,
