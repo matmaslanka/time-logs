@@ -15,11 +15,16 @@ projects = {
     1:
         {'project_number': 'R101', 'project_name': 'Kółeczka', 'project_description': 'Kółka na półkę',
             'start_date': '2024-01-12', 'end_date': '2024-06-12'},
+    2:
+        {'project_number': 'R102', 'project_name': 'Kwadraciki', 'project_description': 'Kwadraciki na półkę',
+         'start_date': '2025-01-12', 'end_date': '2030-06-12'},
     }
 
 teams = {
     0:
-        {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass'}
+        {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass'},
+    1:
+        {'team_name': 'Pożarowy team', 'team_leader': 'Robi Bobi'},
 }
 
 
@@ -167,7 +172,15 @@ def hours_delete(employee_id):
 @app.route('/projects/delete<int:project_id>', methods=['POST'])
 def project_delete(project_id):
     project = projects.get(project_id)
+    project_number = project.get('project_number')
+    project_name = project.get('project_name')
+    project_no = project_number + " - " + project_name
     if request.method == 'POST':
+        for emp_id, emp_info in employees.items():
+            for emp_project_id, emp_project_info in emp_info['projects_emp'].items():
+                if emp_project_info['project_name'] == project_no:
+                    return render_template('data_are_used.html', message=f'First remove project '
+                                                                         f'from project time in employees.')
         del projects[project_id]
         return redirect(url_for('list_of_projects'))
     return render_template('list_of_projects', project_id=project_id)
@@ -262,7 +275,18 @@ def project_update(project_id):
 @app.route("/projects/modify/<int:project_id>", methods=['GET', 'POST'])
 def project_modify(project_id):
     project = projects.get(project_id)
+    project_number = project.get('project_number')
+    project_name = project.get('project_name')
+    project_no = project_number + " - " + project_name
     if request.method == 'POST':
+        new_project_number = request.form.get('project_number')
+        new_project_name = request.form.get('project_name')
+        new_project_no = new_project_number + " - " + new_project_name
+        # for loop change project in employees which are in this team
+        for emp_id, emp_info in employees.items():
+            for emp_project_id, emp_project_info in emp_info['projects_emp'].items():
+                if emp_project_info['project_name'] == project_no:
+                    emp_project_info['project_name'] = new_project_no
         project_number = request.form.get('project_number')
         project_name = request.form.get('project_name')
         project_description = request.form.get('project_description')
