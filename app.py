@@ -22,9 +22,9 @@ projects = {
 
 teams = {
     0:
-        {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass'},
+        {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass', 'team_members': []},
     1:
-        {'team_name': 'Pożarowy team', 'team_leader': 'Robi Bobi'},
+        {'team_name': 'Pożarowy team', 'team_leader': 'Robi Bobi', 'team_members': []},
 }
 
 
@@ -39,11 +39,6 @@ def add_hours():
         return render_template('no_employee_hours.html')
     else:
         return render_template('list_of_employees_hours.html', employees=employees)
-
-
-# @app.route('/check_hours')
-# def check_hours():
-#     return 'check_hours'
 
 
 @app.route('/employees')
@@ -85,20 +80,12 @@ def list_of_teams():
 #     return render_template('add_team.html')
 
 
-# @app.route('/arch')
-# def arch():
-#     return 'arch'
-
-
 @app.route('/employees/<int:employee_id>')
 def employee(employee_id):
     employee = employees.get(employee_id)
     if not employee:
         return render_template('404.html', message=f'A employee with id {id} was not found.')
-    if 'projects_emp' not in employees[employee_id].keys() or len(employee['projects_emp']) == 0:
-        return render_template('employee_without_hours.html', employee=employee)
-    else:
-        return render_template('employee.html', employee=employee, employee_id=employee_id)
+    return render_template('employee.html', employee=employee, employee_id=employee_id)
 
 
 @app.route('/projects/<int:project_id>')
@@ -116,7 +103,7 @@ def team(team_id):
     if not team:
         return render_template('404.html', message=f'A team was not found.')
 
-    return render_template('team.html', team=team)
+    return render_template('team.html', team=team, teams=teams, employees=employees)
 
 
 @app.route("/hours/<int:employee_id>", methods=['GET', 'POST'])
@@ -149,6 +136,9 @@ def add_hours_to_employee(employee_id):
 def employee_delete(employee_id):
     employee = employees.get(employee_id)
     if request.method == 'POST':
+        for team_id, team_info in teams.items():
+            if employee_id in team_info['team_members']:
+                team_info['team_members'].remove(int(employee_id))
         del employees[employee_id]
         return redirect(url_for('list_of_employees'))
     return render_template('list_of_employees', employee_id=employee_id)
@@ -163,13 +153,10 @@ def hours_delete(employee_id):
         if project:
             del employee['projects_emp'][int(projects_id)]
             return redirect(url_for('employee', employee_id=employee_id))
-    if 'projects_emp' not in employee:
-        return render_template('employee_without_hours.html', employee=employee)
-    else:
-        return render_template('employee.html', employee=employee, employee_id=employee_id)
+    return render_template('employee.html', employee=employee, employee_id=employee_id)
 
 
-@app.route('/projects/delete<int:project_id>', methods=['POST'])
+@app.route('/projects/delete/<int:project_id>', methods=['POST'])
 def project_delete(project_id):
     project = projects.get(project_id)
     project_number = project.get('project_number')
@@ -205,7 +192,11 @@ def create():
         name = request.form.get('name')
         team = request.form.get('team')
         employee_id = len(employees)
-        employees[employee_id] = {'employee_id': employee_id, 'name': name, 'team': team}
+        # employees[employee_id] = {'employee_id': employee_id, 'name': name, 'team': team}
+        employees[employee_id] = {'name': name, 'team': team, 'projects_emp':{}}
+        for team_id, team_info in teams.items():
+            if team_info['team_name'] == team:
+                team_info['team_members'].append(employee_id)
 
         return redirect(url_for('employee', employee_id=employee_id))
         # przekierowuje nas na tę stronę którą stworzyliśmy
@@ -238,7 +229,8 @@ def team_create():
         team_leader = request.form.get('team_leader')
         team_id = len(teams)
         teams[team_id] = {'team_name': team_name,
-                          'team_leader': team_leader}
+                          'team_leader': team_leader,
+                          'team_members': []}
         return redirect(url_for('team', team_id=team_id))
     return render_template('add_team.html')
 
@@ -257,7 +249,14 @@ def employee_modify(employee_id):
     if request.method == 'POST':
         name = request.form.get('name')
         team = request.form.get('team')
-        employees[int(employee_id)] = {'employee_id': int(employee_id), 'name': name, 'team': team}
+        # employees[int(employee_id)] = {'employee_id': int(employee_id), 'name': name, 'team': team}
+        employees[int(employee_id)]['name'] = name
+        employees[int(employee_id)]['team'] = team
+        for team_id, team_info in teams.items():
+            if int(employee_id) in team_info['team_members']:
+                team_info['team_members'].remove(int(employee_id))
+            if team_info['team_name'] == team:
+                team_info['team_members'].append(employee_id)
 
         return redirect(url_for('employee', employee_id=employee_id))
         # przekierowuje nas na tę stronę którą stworzyliśmy
@@ -319,12 +318,13 @@ def team_modify(team_id):
         # for loop change team in employees which are in this team
         for emp_id, emp_info in employees.items():
             if emp_info['team'] == team_name:
-                team_name = request.form.get('team_name')
-                emp_info['team'] = team_name
+                new_team_name = request.form.get('team_name')
+                emp_info['team'] = new_team_name
         team_name = request.form.get('team_name')
         team_leader = request.form.get('team_leader')
-        teams[team_id] = {'team_name': team_name,
-                          'team_leader': team_leader}
+        teams[team_id]['team_name'] = team_name
+        teams[team_id]['team_leader'] = team_leader
+
         return redirect(url_for('team', team_id=team_id))
     return render_template('modify_team.html', team_id=team_id, team=team)
 

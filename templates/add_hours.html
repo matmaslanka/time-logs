@@ -2,7 +2,12 @@
 
 {% block content %}
 <h1>Add hours:</h1>
+{% if not projects%}
+    <p>First add project!</p>
+    <p><a href="/projects/create">Add first project</a><p>
+{% endif %}
 
+{% if projects%}
 <form action="{{ url_for('add_hours_to_employee', employee_id=employee_id) }}" method="POST">
 <div>
     <label for="project_no">Project number:</label>
@@ -21,4 +26,5 @@
     <input type="submit" value="Add"/>
 </div>
 </form>
+{% endif %}
 {% endblock %}

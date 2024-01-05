@@ -3,11 +3,12 @@
 {% block content %}
     <h1>{{ employee['name'] }}</h1>
     <p>Team: {{ employee['team'] }}</p>
-    {# <p>Project name: {{ employee['projects_emp'][0]['project_name'] }}</p> #}
-    {# <p>Project time: {{ employee['projects_emp'][0]['project_time'] }}</p> #}
-    {# <p>Project time: {{ employee['projects_emp']}}</p> #}
-{# Tutaj muszę zrobić pętle, żeby mi listowało liczbę godzin do danej osoby #}
 
+{% if not employee['projects_emp']%}
+    <p>Not hours yet!</p>
+{% endif %}
+
+{% if employee['projects_emp']%}
 <p>Projects time:</p>
 <ul>
     {% for projects_id, project in employee['projects_emp'].items() %}
@@ -20,6 +21,7 @@
     </li>
     {% endfor %}
 </ul>
+{% endif %}
 {# {{employee}} #}
 
 {% endblock %}

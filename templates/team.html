@@ -2,4 +2,15 @@
 {% block content %}
     <h1>Name: {{ team['team_name'] }}</h1>
     <p>Team leader: {{ team['team_leader'] }} </p>
+{% if team['team_members'] %}
+<p>Team members:</p>
+{% endif %}
+    {% for team_mem in team['team_members'] %}
+    <ul>
+        <li>
+                <a href="{{url_for('employee', employee_id=team_mem)}}">{{ employees[team_mem]['name'] }}</a>
+        </li>
+    </ul>
+    {% endfor %}
+
 {% endblock %}
