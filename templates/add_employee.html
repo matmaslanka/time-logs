@@ -2,6 +2,13 @@
 
 {% block content %}
 <h1>Add employee</h1>
+
+{% if not teams%}
+    <p>First add team!</p>
+    <p><a href="/teams/create">Add first team</a><p>
+{% endif %}
+
+{% if teams%}
 <form action="/employees/create" method="POST">
     <div>
         <label for="name">Name:</label>
@@ -20,4 +27,5 @@
         <input type="submit" value="Send">
     </div>
 </form>
+{% endif %}
 {% endblock %}
