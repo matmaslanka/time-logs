@@ -21,7 +21,7 @@ Project: Time Logs
 
 5. Project Status:
 
-   The project is in the development phase (point 10). Updates will include the introduction of database handling, enhancing the system's advanced features.
+   The project is in the development phase. Updates will include the introduction of database handling, enhancing the system's advanced features.
 
 6. Educational Purpose:
    
