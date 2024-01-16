@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from utils import database
 
 app = Flask(__name__)
 employees = {}
@@ -8,24 +9,32 @@ employees = {}
 #             {0: {'project_name': 'R100 - Rowerki', 'project_time': 20}}}
 #     }
 
-projects = {
-    0:
-        {'project_number': 'R100', 'project_name': 'Rowerki', 'project_description': 'Rowerki do jeżdżenia',
-         'start_date': '2023-12-30', 'end_date': '2024-12-30'},
-    1:
-        {'project_number': 'R101', 'project_name': 'Kółeczka', 'project_description': 'Kółka na półkę',
-            'start_date': '2024-01-12', 'end_date': '2024-06-12'},
-    2:
-        {'project_number': 'R102', 'project_name': 'Kwadraciki', 'project_description': 'Kwadraciki na półkę',
-         'start_date': '2025-01-12', 'end_date': '2030-06-12'},
-    }
+projects = {}
+# {
+#     0:
+#         {'project_number': 'R100', 'project_name': 'Rowerki', 'project_description': 'Rowerki do jeżdżenia',
+#          'start_date': '2023-12-30', 'end_date': '2024-12-30'},
+#     1:
+#         {'project_number': 'R101', 'project_name': 'Kółeczka', 'project_description': 'Kółka na półkę',
+#             'start_date': '2024-01-12', 'end_date': '2024-06-12'},
+#     2:
+#         {'project_number': 'R102', 'project_name': 'Kwadraciki', 'project_description': 'Kwadraciki na półkę',
+#          'start_date': '2025-01-12', 'end_date': '2030-06-12'},
+#     }
 
-teams = {
-    0:
-        {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass', 'team_members': []},
-    1:
-        {'team_name': 'Pożarowy team', 'team_leader': 'Robi Bobi', 'team_members': []},
-}
+teams = {}
+# {
+#     0:
+#         {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass', 'team_members': []},
+#     1:
+#         {'team_name': 'Pożarowy team', 'team_leader': 'Robi Bobi', 'team_members': []},
+# }
+hours = []
+
+database.create_employee_table()
+database.create_project_table()
+database.create_teams_table()
+database.create_employees_projects_table()
 
 
 @app.route('/')
@@ -118,16 +127,22 @@ def add_hours_create(employee_id):
 def add_hours_to_employee(employee_id):
     employee = employees.get(employee_id)
     if request.method == 'POST':
-        project_name_hours = request.form.get('project_no')
+        project_id_hours = int(request.form.get('project_no'))
+        project_number_hours = projects[project_id_hours]['project_number']
+        project_name_hours = projects[project_id_hours]['project_name']
+        project_number_name = f'{project_number_hours} - {project_name_hours}'
         project_time_hours = request.form.get('time')
         if 'projects_emp' not in employees[employee_id].keys():
             projects_id = 0
-            employees[employee_id]['projects_emp'] = {projects_id: {'project_name': project_name_hours,
+            employees[employee_id]['projects_emp'] = {projects_id: {'project_name': project_number_name,
                                                                     'project_time': project_time_hours}}
         else:
             projects_id = len(employees[employee_id]['projects_emp'])
-            employees[employee_id]['projects_emp'][projects_id] = {'project_name': project_name_hours,
+            employees[employee_id]['projects_emp'][projects_id] = {'project_name': project_number_name,
                                                                    'project_time': project_time_hours}
+        employees_projects_id = len(hours)
+        hours.append('pass')
+        database.add_hours(employees_projects_id, employee_id, project_id_hours, project_time_hours)
         return redirect(url_for('employee', employee_id=employee_id))
     return render_template('add_employee.html')
 
@@ -192,12 +207,14 @@ def create():
         name = request.form.get('name')
         team = request.form.get('team')
         employee_id = len(employees)
+        employee_team_id = 0
         # employees[employee_id] = {'employee_id': employee_id, 'name': name, 'team': team}
         employees[employee_id] = {'name': name, 'team': team, 'projects_emp':{}}
         for team_id, team_info in teams.items():
             if team_info['team_name'] == team:
                 team_info['team_members'].append(employee_id)
-
+                employee_team_id = team_id
+        database.add_employee(employee_id, name, employee_team_id)
         return redirect(url_for('employee', employee_id=employee_id))
         # przekierowuje nas na tę stronę którą stworzyliśmy
     return render_template('add_employee.html', teams=teams)
@@ -217,6 +234,7 @@ def project_create():
                                 'project_description': project_description,
                                 'start_date': start_date,
                                 'end_date': end_date}
+        database.add_project(project_id, project_number, project_name, project_description, start_date, end_date)
 
         return redirect(url_for('project', project_id=project_id))
     return render_template('add_project.html')
@@ -231,6 +249,7 @@ def team_create():
         teams[team_id] = {'team_name': team_name,
                           'team_leader': team_leader,
                           'team_members': []}
+        database.add_team(team_id, team_name, team_leader)
         return redirect(url_for('team', team_id=team_id))
     return render_template('add_team.html')
 

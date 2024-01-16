@@ -13,7 +13,7 @@
     <label for="project_no">Project number:</label>
     <select name="project_no" id="project_no">
         {% for project_id, project in projects.items() %}
-        <option value="{{ project['project_number'] }} - {{ project['project_name'] }}">
+        <option value="{{ project_id }}">
             {{ project['project_number'] }} - {{ project['project_name'] }}</option>
         {% endfor %}
     </select>
