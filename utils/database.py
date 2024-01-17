@@ -5,7 +5,7 @@ def create_employee_table():
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
 
-    cursor.execute('CREATE TABLE IF NOT EXISTS employees(id integer primary key, name, id_team)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS employees(id integer, name, id_team)')
 
     connection.commit()
     connection.close()
@@ -15,7 +15,7 @@ def create_project_table():
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
 
-    cursor.execute('CREATE TABLE IF NOT EXISTS projects(id integer primary key, project_number text, project_name text,'
+    cursor.execute('CREATE TABLE IF NOT EXISTS projects(id integer, project_number text, project_name text,'
                    'project_description text, start_date text, end_date text)')
 
     connection.commit()
@@ -26,7 +26,7 @@ def create_teams_table():
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
 
-    cursor.execute('CREATE TABLE IF NOT EXISTS teams(id integer primary key, team_name text, team_leader text)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS teams(id integer, team_name text, team_leader text)')
 
     connection.commit()
     connection.close()
@@ -36,8 +36,8 @@ def create_employees_projects_table():
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
 
-    cursor.execute('CREATE TABLE IF NOT EXISTS employees_projects(id integer primary key, id_employee integer,'
-                   'id_project integer, time integer)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS employees_projects(id_employee integer, id_project integer,'
+                   ' time integer)')
 
     connection.commit()
     connection.close()
@@ -75,12 +75,11 @@ def add_team(team_id, team_name, team_leader):
     connection.close()
 
 
-def add_hours(employees_projects_id, employee_id, project_id, time_on_project):
+def add_hours(employee_id, project_id, time_on_project):
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
 
-    cursor.execute('INSERT INTO employees_projects VALUES(?, ?, ?, ?)', (employees_projects_id, employee_id, project_id,
-                                                                         time_on_project))
+    cursor.execute('INSERT INTO employees_projects VALUES(?, ?, ?)', (employee_id, project_id, time_on_project))
 
     connection.commit()
     connection.close()

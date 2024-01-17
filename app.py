@@ -3,32 +3,15 @@ from utils import database
 
 app = Flask(__name__)
 employees = {}
-#     {
-#     0:
-#         {'name': "Mati Bombalski", 'team': "Słoniowski Team", 'projects_emp':
-#             {0: {'project_name': 'R100 - Rowerki', 'project_time': 20}}}
-#     }
+# {0:{'name': "Mati Bombalski", 'team': "Słoniowski Team", 'projects_emp':{0: {'project_name': 'R100 - Rowerki',
+# 'project_time': 20}}}}
 
 projects = {}
-# {
-#     0:
-#         {'project_number': 'R100', 'project_name': 'Rowerki', 'project_description': 'Rowerki do jeżdżenia',
-#          'start_date': '2023-12-30', 'end_date': '2024-12-30'},
-#     1:
-#         {'project_number': 'R101', 'project_name': 'Kółeczka', 'project_description': 'Kółka na półkę',
-#             'start_date': '2024-01-12', 'end_date': '2024-06-12'},
-#     2:
-#         {'project_number': 'R102', 'project_name': 'Kwadraciki', 'project_description': 'Kwadraciki na półkę',
-#          'start_date': '2025-01-12', 'end_date': '2030-06-12'},
-#     }
+# {0:{'project_number': 'R100', 'project_name': 'Rowerki', 'project_description': 'Rowerki do jeżdżenia',
+# 'start_date': '2023-12-30', 'end_date': '2024-12-30'}}
 
 teams = {}
-# {
-#     0:
-#         {'team_name': 'Bytowy team', 'team_leader': 'Mati Mass', 'team_members': []},
-#     1:
-#         {'team_name': 'Pożarowy team', 'team_leader': 'Robi Bobi', 'team_members': []},
-# }
+# {0:{'team_name': 'Bytowy team', 'team_leader': 'Mati Mass', 'team_members': []}}
 hours = []
 
 database.create_employee_table()
@@ -72,21 +55,6 @@ def list_of_teams():
         return render_template('no_team.html')
     else:
         return render_template('list_of_teams.html', teams=teams)
-
-
-# @app.route('/add_employee')
-# def add_employee():
-#     return render_template('add_employee.html', teams=teams)
-
-
-# @app.route('/add_project')
-# def add_project():
-#     return render_template('add_project.html')
-
-
-# @app.route('/add_team')
-# def add_team():
-#     return render_template('add_team.html')
 
 
 @app.route('/employees/<int:employee_id>')
@@ -140,65 +108,9 @@ def add_hours_to_employee(employee_id):
             projects_id = len(employees[employee_id]['projects_emp'])
             employees[employee_id]['projects_emp'][projects_id] = {'project_name': project_number_name,
                                                                    'project_time': project_time_hours}
-        employees_projects_id = len(hours)
-        hours.append('pass')
-        database.add_hours(employees_projects_id, employee_id, project_id_hours, project_time_hours)
+        database.add_hours(employee_id, project_id_hours, project_time_hours)
         return redirect(url_for('employee', employee_id=employee_id))
     return render_template('add_employee.html')
-
-
-@app.route('/employees/delete/<int:employee_id>', methods=['POST'])
-def employee_delete(employee_id):
-    employee = employees.get(employee_id)
-    if request.method == 'POST':
-        for team_id, team_info in teams.items():
-            if employee_id in team_info['team_members']:
-                team_info['team_members'].remove(int(employee_id))
-        del employees[employee_id]
-        return redirect(url_for('list_of_employees'))
-    return render_template('list_of_employees', employee_id=employee_id)
-
-
-@app.route("/hours/delete/<int:employee_id>", methods=['POST'])
-def hours_delete(employee_id):
-    projects_id = request.form.get('projects_id')
-    employee = employees.get(employee_id, {})
-    project = employee.get('projects_emp', {}).get(int(projects_id))
-    if request.method == 'POST':
-        if project:
-            del employee['projects_emp'][int(projects_id)]
-            return redirect(url_for('employee', employee_id=employee_id))
-    return render_template('employee.html', employee=employee, employee_id=employee_id)
-
-
-@app.route('/projects/delete/<int:project_id>', methods=['POST'])
-def project_delete(project_id):
-    project = projects.get(project_id)
-    project_number = project.get('project_number')
-    project_name = project.get('project_name')
-    project_no = project_number + " - " + project_name
-    if request.method == 'POST':
-        for emp_id, emp_info in employees.items():
-            for emp_project_id, emp_project_info in emp_info['projects_emp'].items():
-                if emp_project_info['project_name'] == project_no:
-                    return render_template('data_are_used.html', message=f'First remove project '
-                                                                         f'from project time in employees.')
-        del projects[project_id]
-        return redirect(url_for('list_of_projects'))
-    return render_template('list_of_projects', project_id=project_id)
-
-
-@app.route('/teams/delete/<int:team_id>', methods=['POST'])
-def team_delete(team_id):
-    team = teams.get(team_id)
-    team_name = teams.get(team_id).get('team_name')
-    if request.method == 'POST':
-        for emp_id, emp_info in employees.items():
-            if emp_info['team'] == team_name:
-                return render_template('data_are_used.html', message=f'First remove employees from this team.')
-        del teams[team_id]
-        return redirect(url_for('list_of_teams'))
-    return render_template('list_of_teams', team_id=team_id)
 
 
 @app.route("/employees/create", methods=['GET', 'POST'])
@@ -346,6 +258,60 @@ def team_modify(team_id):
 
         return redirect(url_for('team', team_id=team_id))
     return render_template('modify_team.html', team_id=team_id, team=team)
+
+
+@app.route('/employees/delete/<int:employee_id>', methods=['POST'])
+def employee_delete(employee_id):
+    employee = employees.get(employee_id)
+    if request.method == 'POST':
+        for team_id, team_info in teams.items():
+            if employee_id in team_info['team_members']:
+                team_info['team_members'].remove(int(employee_id))
+        del employees[employee_id]
+        return redirect(url_for('list_of_employees'))
+    return render_template('list_of_employees', employee_id=employee_id)
+
+
+@app.route("/hours/delete/<int:employee_id>", methods=['POST'])
+def hours_delete(employee_id):
+    projects_id = request.form.get('projects_id')
+    employee = employees.get(employee_id, {})
+    project = employee.get('projects_emp', {}).get(int(projects_id))
+    if request.method == 'POST':
+        if project:
+            del employee['projects_emp'][int(projects_id)]
+            return redirect(url_for('employee', employee_id=employee_id))
+    return render_template('employee.html', employee=employee, employee_id=employee_id)
+
+
+@app.route('/projects/delete/<int:project_id>', methods=['POST'])
+def project_delete(project_id):
+    project = projects.get(project_id)
+    project_number = project.get('project_number')
+    project_name = project.get('project_name')
+    project_no = project_number + " - " + project_name
+    if request.method == 'POST':
+        for emp_id, emp_info in employees.items():
+            for emp_project_id, emp_project_info in emp_info['projects_emp'].items():
+                if emp_project_info['project_name'] == project_no:
+                    return render_template('data_are_used.html', message=f'First remove project '
+                                                                         f'from project time in employees.')
+        del projects[project_id]
+        return redirect(url_for('list_of_projects'))
+    return render_template('list_of_projects', project_id=project_id)
+
+
+@app.route('/teams/delete/<int:team_id>', methods=['POST'])
+def team_delete(team_id):
+    team = teams.get(team_id)
+    team_name = teams.get(team_id).get('team_name')
+    if request.method == 'POST':
+        for emp_id, emp_info in employees.items():
+            if emp_info['team'] == team_name:
+                return render_template('data_are_used.html', message=f'First remove employees from this team.')
+        del teams[team_id]
+        return redirect(url_for('list_of_teams'))
+    return render_template('list_of_teams', team_id=team_id)
 
 
 if __name__ == '__main__':
